@@ -1,8 +1,9 @@
 <!DOCTYPE HTML>
 <HTML>
     <HEAD>
-        <TITLE> 개인용ai 노트</TITLE>
+        <TITLE>개인용ai 노트</TITLE>
          <style>
+       
         body {
             background-color: #000000;
             color: #ffffff;
@@ -16,6 +17,7 @@
             flex-direction: column;
         }
 
+       
         h1 {
             font-size: 56px; 
             background: linear-gradient(to right, #4285f4, #9b51e0, #ea4335, #fbbc05, #4285f4);
@@ -30,74 +32,90 @@
             100% { background-position: -200% center; }
         }
         
+       
         button {
-            margin-top:20px;
+            margin-top: 20px;
             padding: 10px 20px;
             background-color: #2997ff;
             color: white;
             font-size: 18px;
             border: none;
-            border-radius:20px;
+            border-radius: 20px;
             cursor: pointer;
-                    /* 1. 이 위치에 마우스 커서를 찍고 아래 내용을 복사해서 붙여넣으세요 */
+        }
+
+      
         #back-btn {
-            position: fixed;
+            position: fixed;            
             top: 20px;
             left: 20px;
             margin-top: 0;
-            width: 40px;
+            width: 40px;               
             height: 40px;
             padding: 0;
-            background-color: #1c1c1e;
-            color: #2997ff;
+            background-color: #1c1c1e; 
+            color: #2997ff;            
             font-size: 16px;
-            border: 1px solid #2997ff;
-            border-radius: 8px;
+            border: 1px solid #2997ff; 
+            border-radius: 8px;         
             cursor: pointer;
         }
         #back-btn:hover {
             background-color: #2997ff;
             color: #ffffff;
         }
-    </style> <!-- 👈 기존에 있던 style 닫는 태그 바로 위에 안착하면 됩니다! -->
 
+       
+        textarea {
+            margin-top: 30px;
+            width: 100%;
+            max-width: 450px;
+            height: 250px;
+            background-color: #1c1c1e;
+            color: #ffffff;
+            font-size: 18px;
+            padding: 20px;
+            border: 2px solid #2997ff;
+            border-radius: 16px;
+            outline: none;
+            resize: none;
         }
     </style>
     </HEAD>
 <body>
+  
     <h1 id="title">안녕하세요</h1>
-    <button id="memo-btn" onclick="openmemo()">메모창 열기</button> 
-    <textarea id="memo-box" style="display: none; width: 300px; height: 150px; font-size: 16px; padding: 10px;"></textarea>
-    <!-- 2. 이 위치에 마우스 커서를 찍고 아래 한 줄을 타이핑해서 추가하세요 -->
-    <button id="back-btn" onclick="closememo()" style="display: none;</button>
-
-
+    <button id="memo-btn" onclick="openmemo()">메모창 열기</button>
+    <textarea id="memo-box" style="display: none;"></textarea>        
+    <button id="back-btn" onclick="closememo()" style="display: none;">◀</button>
 </body>
+
+   
     <script>
     function openmemo() {
         var title = document.getElementById('title');
         var btn = document.getElementById('memo-btn');
         var box = document.getElementById('memo-box');
+        var backBtn = document.getElementById('back-btn');
         
         title.style.display = 'none';
         btn.style.display = 'none';
+        
         box.style.display = 'block';
-        /* 3-A. openmemo 함수 맨 밑에 아래 두 줄을 이어서 적어주세요 */
-        var backBtn = document.getElementById('back-btn');
         backBtn.style.display = 'block'; 
     }
 
-    /* 3-B. openmemo 함수가 끝나는 중괄호(}) 바로 밑에 아래 내용을 통째로 추가하세요 */
     function closememo() {
         var title = document.getElementById('title');
         var btn = document.getElementById('memo-btn');
         var box = document.getElementById('memo-box');
         var backBtn = document.getElementById('back-btn');
         
-        title.style.display = 'block';
-        btn.style.display = 'block';
-        box.style.display = 'none';
-        backBtn.style.display = 'none';
+        title.style.display = 'block';   
+        btn.style.display = 'block';    
+        
+        box.style.display = 'none';     
+        backBtn.style.display = 'none'; 
     }
     </script>
 </HTML>
