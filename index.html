@@ -99,34 +99,44 @@
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
-    // 💡 [AI 실시간 요약 엔진 적용 파트]
+    // 💡 음성 인식이 완전히 완전히 끝났을 때 안전하게 리셋해 주는 장치
+    var isListening = false;
+
     recognition.onresult = function(event) {
-        var speechResult = event.results[0][0].transcript; 
+        var speechResult = event.results[0][0].transcript; // 🚀 안전하게 첫 번째 변환 텍스트 가져오기
         var memoBox = document.getElementById('memo-box');
         
-        // 🚀 [자체 요약 알고리즘 장치] 
-        // 말끝에 붙는 "말이야", "했거든", "진짜로" 등 쓸데없는 조사나 어미를 깔끔하게 요약/정리합니다.
         var summarizedText = speechResult
-            .replace(/말이야|했거든|진짜로|그니까|진짜|약간/g, "") // 반복 노이즈 단어 자동 필터링 제거
-            .trim(); // 앞뒤 공백 청소
+            .replace(/말이야|했거든|진짜로|그니까|진짜|약간/g, "")
+            .trim();
             
-        // 요약이 완료된 핵심 엑기스 문장만 메모장에 이어서 추가
         if (summarizedText.length > 0) {
             memoBox.value = memoBox.value + "\n📌 요약: " + summarizedText;
-            savememo(); // 영구 저장소 연동
+            savememo();
         }
-        
+    };
+
+    // 💡 [핵심 수정] 마이크가 꺼지면 상태를 '완전 종료'로 바꾸고 버튼 글자 리셋
+    recognition.onend = function() {
+        isListening = false;
         document.getElementById('speech-btn').innerText = "🎙️ 음성 요약 시작";
     };
 
-    recognition.onspeechend = function() {
-        recognition.stop();
-        document.getElementById('speech-btn').innerText = "🎙️ 음성 요약 시작";
-    }
-
+    // 🎙️ 마이크 버튼 토글 기능 (켜져 있으면 끄고, 꺼져 있으면 켜기)
     function startSpeech() {
-        recognition.start();
-        document.getElementById('speech-btn').innerText = "🎧 핵심 요약 듣는 중...";
+        if (isListening) {
+            recognition.stop();
+        } else {
+            // 브라우저 버그 방지용 초기화 후 시작
+            try {
+                recognition.start();
+                isListening = true;
+                document.getElementById('speech-btn').innerText = "🎧 핵심 요약 듣는 중...";
+            } catch(e) {
+                // 이미 돌아가고 있다면 강제로 멈췄다 다시 켤 수 있게 리셋
+                recognition.stop();
+            }
+        }
     }
 
     window.onload = function() {
@@ -155,6 +165,7 @@
         document.getElementById('memo-box').style.display = 'none';      
         document.getElementById('back-btn').style.display = 'none';  
         document.getElementById('speech-btn').style.display = 'none'; 
+        try { recognition.stop(); } catch(e) {} // 뒤로 갈 때 마이크 켜져있으면 끄기
     }
     </script>
 </HTML>
