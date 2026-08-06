@@ -3,6 +3,7 @@
     <HEAD>
         <TITLE>개인용ai 노트</TITLE>
          <style>
+        /* 🖤 전체 화면 배경 및 세로 정중앙 정렬 */
         body {
             background-color: #000000;
             color: #ffffff;
@@ -14,8 +15,12 @@
             margin: 0;
             overflow: hidden;
             flex-direction: column;
+            
+            /* 🚀 [오직 이 한 줄만 추가] 피처폰 글씨체를 부드러운 요즘 앱 글씨체로 싹 변경 */
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
 
+        /* 🌈 게이밍 RGB 스타일 무지개 글씨 효과 (2초 회전) */
         h1 {
             font-size: 56px; 
             background: linear-gradient(to right, #4285f4, #9b51e0, #ea4335, #fbbc05, #4285f4);
@@ -30,6 +35,7 @@
             100% { background-position: -200% center; }
         }
         
+        /* 💙 메인 [메모창 열기] 파란색 버튼 디자인 */
         button {
             margin-top: 20px;
             padding: 10px 20px;
@@ -41,6 +47,7 @@
             cursor: pointer;
         }
 
+        /* 🔙 왼쪽 상단 작고 예쁜 사각형 뒤로가기 버튼 디자인 */
         #back-btn {
             position: fixed;
             top: 20px;
@@ -61,12 +68,14 @@
             color: #ffffff;
         }
 
+        /* 🎙️ 음성 요약 버튼 디자인 */
         #speech-btn {
             background-color: #ea4335;
             margin-top: 15px;
             font-weight: bold;
         }
 
+        /* 📥 글을 쓸 수 있는 네모난 메모장 디자인 */
         textarea {
             margin-top: 30px;
             width: 100%;
@@ -80,6 +89,9 @@
             border-radius: 16px;
             outline: none;
             resize: none;
+            
+            /* 🚀 메모장 내부 적히는 텍스트도 똑같이 부드러운 글씨체 적용 */
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
     </style>
     </HEAD>
@@ -99,11 +111,10 @@
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
-    // 💡 음성 인식이 완전히 완전히 끝났을 때 안전하게 리셋해 주는 장치
     var isListening = false;
 
     recognition.onresult = function(event) {
-        var speechResult = event.results[0][0].transcript; // 🚀 안전하게 첫 번째 변환 텍스트 가져오기
+        var speechResult = event.results[0][0].transcript; 
         var memoBox = document.getElementById('memo-box');
         
         var summarizedText = speechResult
@@ -116,24 +127,20 @@
         }
     };
 
-    // 💡 [핵심 수정] 마이크가 꺼지면 상태를 '완전 종료'로 바꾸고 버튼 글자 리셋
     recognition.onend = function() {
         isListening = false;
         document.getElementById('speech-btn').innerText = "🎙️ 음성 요약 시작";
     };
 
-    // 🎙️ 마이크 버튼 토글 기능 (켜져 있으면 끄고, 꺼져 있으면 켜기)
     function startSpeech() {
         if (isListening) {
             recognition.stop();
         } else {
-            // 브라우저 버그 방지용 초기화 후 시작
             try {
                 recognition.start();
                 isListening = true;
                 document.getElementById('speech-btn').innerText = "🎧 핵심 요약 듣는 중...";
             } catch(e) {
-                // 이미 돌아가고 있다면 강제로 멈췄다 다시 켤 수 있게 리셋
                 recognition.stop();
             }
         }
@@ -165,7 +172,7 @@
         document.getElementById('memo-box').style.display = 'none';      
         document.getElementById('back-btn').style.display = 'none';  
         document.getElementById('speech-btn').style.display = 'none'; 
-        try { recognition.stop(); } catch(e) {} // 뒤로 갈 때 마이크 켜져있으면 끄기
+        try { recognition.stop(); } catch(e) {}
     }
     </script>
 </HTML>
