@@ -13,45 +13,41 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
+            flex-direction: column; /* 🚀 버튼이 아랫줄에 이쁘게 나오도록 추가해 두었습니다! */
         }
 
         h1 {
-            /* 글자 크기를 딱 보기 좋은 애플 사이즈(56px)로 고정합니다 */
             font-size: 56px; 
-            
-            /* 무지개 배경을 가로로 길게 늘려 배치합니다 */
             background: linear-gradient(to right, #4285f4, #9b51e0, #ea4335, #fbbc05, #4285f4);
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            
-            /* 🚀 [오타 수정] 4s(4초) 동안 무한히(infinite) 부드럽게 흐르게 만듭니다 */
             animation: rainbow-flow 2s linear infinite;
         }
 
-        /* 🎬 무지개 배경을 왼쪽에서 오른쪽으로 무한히 밀어주는 규칙 */
         @keyframes rainbow-flow {
             0% { background-position: 0% center; }
             100% { background-position: -200% center; }
         }
-    button {
-        margin-top:20px;
-        padding: 10px 20px;
-        background-color: #2997ff;
-        color: white;
-        font-size: 18px;
-        border: none;
-        border-radius:20px;
-        cursor: pointer;
-    }
+        
+        button {
+            margin-top:20px;
+            padding: 10px 20px;
+            background-color: #2997ff;
+            color: white;
+            font-size: 18px;
+            border: none;
+            border-radius:20px;
+            cursor: pointer;
+        }
     </style>
     </HEAD>
 <body>
-    <h1 id="title">안녕하세요</h1>
-    <button id="memo-btn" onclick="openmemo()">메모창 열기</button>
+    <h1 id="title">안녕하세요</h1> <!-- 🚀 1. t 하나 빼고 title 명찰로 완벽하게 수정! -->
+    <button id="memo-btn" onclick="openmemo()">메모창 열기</button> <!-- 🚀 2. 끝에 button 오타 수정! -->
     <textarea id="memo-box" style="display: none; width: 300px; height: 150px; font-size: 16px; padding: 10px;"></textarea>        
 </body>
-        <script>
+    <script>
     function openmemo() {
         var title = document.getElementById('title');
         var btn = document.getElementById('memo-btn');
