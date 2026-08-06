@@ -3,7 +3,7 @@
     <HEAD>
         <TITLE>개인용ai 노트</TITLE>
          <style>
-       
+        /* 🖤 전체 화면 배경 및 세로 정중앙 정렬 */
         body {
             background-color: #000000;
             color: #ffffff;
@@ -14,10 +14,10 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
-            flex-direction: column;
+            flex-direction: column; /* 내용물들을 위아래로 이쁘게 쌓이도록 정렬 */
         }
 
-       
+        /* 🌈 게이밍 RGB 스타일 무지개 글씨 효과 (2초 회전) */
         h1 {
             font-size: 56px; 
             background: linear-gradient(to right, #4285f4, #9b51e0, #ea4335, #fbbc05, #4285f4);
@@ -32,7 +32,7 @@
             100% { background-position: -200% center; }
         }
         
-       
+        /* 💙 메인 [메모창 열기] 파란색 버튼 디자인 */
         button {
             margin-top: 20px;
             padding: 10px 20px;
@@ -44,20 +44,20 @@
             cursor: pointer;
         }
 
-      
+        /* 🔙 왼쪽 상단 작고 예쁜 사각형 뒤로가기 버튼 디자인 */
         #back-btn {
-            position: fixed;            
+            position: fixed;            /* 화면 왼쪽 상단에 위치 박제 */
             top: 20px;
             left: 20px;
             margin-top: 0;
-            width: 40px;               
+            width: 40px;                /* 아담한 사각형 크기 */
             height: 40px;
             padding: 0;
-            background-color: #1c1c1e; 
-            color: #2997ff;            
+            background-color: #1c1c1e;  /* 애플 다크 그레이 */
+            color: #2997ff;             /* 화살표는 파란색 */
             font-size: 16px;
-            border: 1px solid #2997ff; 
-            border-radius: 8px;         
+            border: 1px solid #2997ff;  /* 얇은 파란색 테두리 */
+            border-radius: 8px;         /* 아주 살짝만 둥근 모서리 */
             cursor: pointer;
         }
         #back-btn:hover {
@@ -65,7 +65,7 @@
             color: #ffffff;
         }
 
-       
+        /* 📥 글을 쓸 수 있는 네모난 메모장 디자인 */
         textarea {
             margin-top: 30px;
             width: 100%;
@@ -83,14 +83,13 @@
     </style>
     </HEAD>
 <body>
-  
     <h1 id="title">안녕하세요</h1>
     <button id="memo-btn" onclick="openmemo()">메모창 열기</button>
     <textarea id="memo-box" style="display: none;"></textarea>        
     <button id="back-btn" onclick="closememo()" style="display: none;">◀</button>
 </body>
 
-   
+    <!-- ⚡ 실시간 화면 전환 자바스크립트 마법 명령어 -->
     <script>
     function openmemo() {
         var title = document.getElementById('title');
@@ -102,7 +101,7 @@
         btn.style.display = 'none';
         
         box.style.display = 'block';
-        backBtn.style.display = 'block'; 
+        backBtn.style.display = 'block';
     }
 
     function closememo() {
@@ -112,10 +111,10 @@
         var backBtn = document.getElementById('back-btn');
         
         title.style.display = 'block';   
-        btn.style.display = 'block';    
+        btn.style.display = 'block';     
         
-        box.style.display = 'none';     
-        backBtn.style.display = 'none'; 
+        box.style.display = 'none';      
+        backBtn.style.display = 'none';  
     }
     </script>
 </HTML>
