@@ -46,27 +46,27 @@
             cursor: pointer;
         }
 
-        /* 🗺️ [핵심 추가] 메모장이 열렸을 때 작동하는 좌/우 분할 레이아웃 컨트롤러 */
+        /* 🗺️ 메모장이 열렸을 때 작동하는 좌/우 분할 레이아웃 컨트롤러 */
         .memo-layout-workspace {
-            display: none; /* 평소엔 숨김 */
+            display: none; 
             width: 100vw;
             height: 100vh;
             box-sizing: border-box;
         }
 
-        /* 👈 [사이드바 구역] 뒤로가기 버튼과 음성인식 버튼이 사는 왼쪽 구석 공간 */
+        /* 👈 [사이드바 구역] 뒤로가기 버튼과 기능 버튼들이 사는 왼쪽 구석 공간 */
         .left-sidebar {
-            width: 80px;                /* 왼쪽 버튼 구역 너비 고정 */
+            width: 80px;                
             height: 100vh;
-            padding: 20px 0 0 20px;     /* 위쪽과 왼쪽에 적절한 여백 배치 */
+            padding: 20px 0 0 20px;     
             display: flex;
             flex-direction: column;
-            gap: 15px;                  /* ◀ 버튼과 음성인식 버튼 사이의 간격 */
+            gap: 15px;                  
             box-sizing: border-box;
-            float: left;                /* 왼쪽에 강제 박제 */
+            float: left;                
         }
 
-        /* 🔙 뒤로가기 버튼 (위치 고정을 고치고 사이드바 안으로 정렬) */
+        /* 🔙 뒤로가기 버튼 */
         #back-btn {
             width: 40px;
             height: 40px;
@@ -83,9 +83,9 @@
             color: #ffffff;
         }
 
-        /* 🎙️ [위치 재조정] 유저님 설계도의 노랑 칸 자리로 들어간 남색 음성 인식 버튼 */
+        /* 🎙️ 남색 감성의 이쁜 사각형 모양 음성 인식 버튼 */
         #speech-btn {
-            width: 50px;                /* 작고 이쁜 모양새의 크기 지정 */
+            width: 50px;                
             height: 40px;
             padding: 0;
             font-size: 14px;
@@ -101,9 +101,24 @@
             color: #000000;
         }
 
-        /* 👉 [메모장 구역] 설계도상의 거대한 우측 빨간 칸 영역 */
+        /* 🔊 [스위치 연동 스타일 수정을 반영] 켜짐/꺼짐에 따라 색상이 실시간으로 변하는 오디오 스위치 버튼 */
+        #speak-btn {
+            width: 50px;                
+            height: 40px;
+            padding: 0;
+            font-size: 14px;
+            background-color: #0a192f;  
+            color: #a855f7;             
+            border: 1px solid #a855f7;  
+            font-weight: bold;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(168, 85, 247, 0.15); 
+            cursor: pointer;
+        }
+
+        /* 👉 [메모장 구역] 거대한 우측 공간 단독 배정 */
         .right-content {
-            margin-left: 80px;          /* 왼쪽 사이드바 너비만큼 침범 방지 */
+            margin-left: 80px;          
             height: 100vh;
             padding: 20px;
             box-sizing: border-box;
@@ -112,7 +127,7 @@
         /* 📥 우측 구역을 자석처럼 꽉 채우는 대형 메모 상자 */
         textarea {
             width: 100%;
-            height: calc(100vh - 40px); /* 화면 전체 높이에서 여백 빼고 꽉 채우기 */
+            height: calc(100vh - 40px); 
             background-color: #1c1c1e;
             color: #ffffff;
             font-size: 18px;
@@ -134,20 +149,17 @@
         <button id="memo-btn" onclick="openmemo()">메모창 열기</button>
     </div>
 
-    <!-- 2층 무대: [설계도 연동] 메모장 전용 분할 작업 공간 -->
+    <!-- 2층 무대: 메모장 전용 분할 작업 공간 -->
     <div id="workspace-view" class="memo-layout-workspace">
-        
-        <!-- 👈 왼쪽 구역 (뒤로가기 + 음성인식 배치) -->
         <div class="left-sidebar">
             <button id="back-btn" onclick="closememo()">◀</button>
-            <button id="speech-btn" onclick="startSpeech()">🎙️</button> <!-- 작고 이쁜 사각형에 맞춰 🎙️ 아이콘만 깔끔하게 축소 -->
+            <button id="speech-btn" onclick="startSpeech()">🎙️</button> 
+            <!-- 🔊 스피커 ON / OFF 토글 연동 버튼 -->
+            <button id="speak-btn" onclick="toggleAudioSwitch()">🔊 켜짐</button> 
         </div>
-        
-        <!-- 👉 오른쪽 구역 (거대 메모장 단독 배치) -->
         <div class="right-content">
             <textarea id="memo-box" oninput="savememo()"></textarea>        
         </div>
-        
     </div>
 
 </body>
@@ -156,14 +168,17 @@
     var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     var recognition = new SpeechRecognition();
 
-    recognition.lang = 'ko-KR';
+    recognition.lang = 'ko-KR'; 
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
     var isListening = false;
+    
+    // 💡 [유저 기획 필수 변수] 스피커가 켜져 있는지 꺼져 있는지 기억하는 안전장치 스위치 (기본값: 켜짐)
+    var isAudioOn = true; 
 
     recognition.onresult = function(event) {
-        var speechResult = event.results.transcript; 
+        var speechResult = event.results[0][0].transcript; 
         var memoBox = document.getElementById('memo-box');
         
         var summarizedText = speechResult
@@ -171,8 +186,28 @@
             .trim();
             
         if (summarizedText.length > 0) {
-            memoBox.value = memoBox.value + "\n📌 요약: " + summarizedText;
-            savememo();
+            var fullNewText = "\n요약: " + summarizedText;
+            
+            // 🚀 1. 오디오 스위치가 '켜짐' 상태일 때만 실시간 목소리 출력 작동
+            if (isAudioOn) {
+                window.speechSynthesis.cancel(); // 꼬임 방지 초기화
+                var utterance = new SpeechSynthesisUtterance(summarizedText); // 요약 내용만 읽기 지정
+                utterance.lang = 'ko-KR';
+                utterance.rate = 1.2; // 글씨 써지는 속도에 맞춰 살짝 빠르게 배속 튜닝
+                window.speechSynthesis.speak(utterance);
+            }
+            
+            // 🚀 2. [타자기 연출 장치] 한 번에 띡 적지 않고 한 글자씩 빠르게 따다닥 채워나가는 무대 기술
+            var charIndex = 0;
+            function typeWriter() {
+                if (charIndex < fullNewText.length) {
+                    memoBox.value += fullNewText.charAt(charIndex);
+                    charIndex++;
+                    savememo(); // 한 글자씩 써질 때마다 영구 저장 장치 연동
+                    setTimeout(typeWriter, 50); // 0.05초 간격으로 타자기 치듯 글자 촤르륵 연출
+                }
+            }
+            typeWriter(); // 타자기 가동!
         }
     };
 
@@ -187,13 +222,35 @@
             recognition.stop();
         } else {
             try {
+                window.speechSynthesis.cancel(); 
                 recognition.start();
                 isListening = true;
                 document.getElementById('speech-btn').innerText = "🎧";
-                document.getElementById('speech-btn').style.backgroundColor = "#ea4335"; // 인식 중일 땐 알아채기 쉽게 빨간 불빛 효과
+                document.getElementById('speech-btn').style.backgroundColor = "#ea4335"; 
             } catch(e) {
                 recognition.stop();
             }
+        }
+    }
+
+    // 🔊 [오디오 마스터 제어 스위치 함수] 버튼을 누를 때마다 켜고 끄는 토글 제어 장치
+    function toggleAudioSwitch() {
+        var speakBtn = document.getElementById('speak-btn');
+        if (isAudioOn) {
+            // 스피커 끄기 모드 돌입
+            isAudioOn = false;
+            window.speechSynthesis.cancel(); // 읽고 있던 소리 강제 묵념
+            speakBtn.innerText = "🔇 꺼짐";
+            speakBtn.style.color = "#86868b"; // 꺼졌을 땐 비활성화 느낌의 회색 컬러
+            speakBtn.style.border = "1px solid #86868b";
+            speakBtn.style.boxShadow = "none";
+        } else {
+            // 스피커 켜기 모드 돌입
+            isAudioOn = true;
+            speakBtn.innerText = "🔊 켜짐";
+            speakBtn.style.color = "#a855f7"; // 켜졌을 땐 시그니처 보라색 컬러 부활
+            speakBtn.style.border = "1px solid #a855f7";
+            speakBtn.style.boxShadow = "0 4px 15px rgba(168, 85, 247, 0.15)";
         }
     }
 
@@ -210,16 +267,13 @@
     }
 
     function openmemo() {
-        // 메인 정중앙 뷰 숨기기
         document.getElementById('main-view').style.display = 'none';
-        // 설계도대로 조각된 전체 분할 워크스페이스 켜기
         document.getElementById('workspace-view').style.display = 'block';
     }
 
     function closememo() {
-        // 분할 워크스페이스 숨기기
+        window.speechSynthesis.cancel(); 
         document.getElementById('workspace-view').style.display = 'none';
-        // 초기 화면 정중앙 뷰 다시 켜기
         document.getElementById('main-view').style.display = 'flex';
         try { recognition.stop(); } catch(e) {}
     }
