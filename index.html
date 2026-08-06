@@ -34,9 +34,21 @@
             0% { background-position: 0% center; }
             100% { background-position: -200% center; }
         }
+    button {
+        margin-top:20px;
+        padding: 10px 20px;
+        background-color: #2997ff;
+        color: white;
+        font-size: 18px;
+        border: none;
+        border-radius:20px
+        cursor: pointer;
+    }
     </style>
     </HEAD>
 <body>
     <h1>안녕하세요</h1>
+    <button id="memo-btn" onclick="openmemo()"메모창 열기</buttom>
+    <textarea id="memo-box" style="display: none; width: 300px height: 150px; font-size: 16px; padding: 10px;"></textarea>        
 </body>
 </HTML>
