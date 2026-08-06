@@ -3,7 +3,6 @@
     <HEAD>
         <TITLE>개인용ai 노트</TITLE>
          <style>
-        /* 🖤 전체 화면 배경 및 세로 정중앙 정렬 */
         body {
             background-color: #000000;
             color: #ffffff;
@@ -14,10 +13,9 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
-            flex-direction: column; /* 내용물들을 위아래로 이쁘게 쌓이도록 정렬 */
+            flex-direction: column;
         }
 
-        /* 🌈 게이밍 RGB 스타일 무지개 글씨 효과 (2초 회전) */
         h1 {
             font-size: 56px; 
             background: linear-gradient(to right, #4285f4, #9b51e0, #ea4335, #fbbc05, #4285f4);
@@ -32,7 +30,6 @@
             100% { background-position: -200% center; }
         }
         
-        /* 💙 메인 [메모창 열기] 파란색 버튼 디자인 */
         button {
             margin-top: 20px;
             padding: 10px 20px;
@@ -44,20 +41,19 @@
             cursor: pointer;
         }
 
-        /* 🔙 왼쪽 상단 작고 예쁜 사각형 뒤로가기 버튼 디자인 */
         #back-btn {
-            position: fixed;            /* 화면 왼쪽 상단에 위치 박제 */
+            position: fixed;
             top: 20px;
             left: 20px;
             margin-top: 0;
-            width: 40px;                /* 아담한 사각형 크기 */
+            width: 40px;
             height: 40px;
             padding: 0;
-            background-color: #1c1c1e;  /* 애플 다크 그레이 */
-            color: #2997ff;             /* 화살표는 파란색 */
+            background-color: #1c1c1e;
+            color: #2997ff;
             font-size: 16px;
-            border: 1px solid #2997ff;  /* 얇은 파란색 테두리 */
-            border-radius: 8px;         /* 아주 살짝만 둥근 모서리 */
+            border: 1px solid #2997ff;
+            border-radius: 8px;
             cursor: pointer;
         }
         #back-btn:hover {
@@ -65,7 +61,12 @@
             color: #ffffff;
         }
 
-        /* 📥 글을 쓸 수 있는 네모난 메모장 디자인 */
+        #speech-btn {
+            background-color: #ea4335;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
         textarea {
             margin-top: 30px;
             width: 100%;
@@ -85,36 +86,75 @@
 <body>
     <h1 id="title">안녕하세요</h1>
     <button id="memo-btn" onclick="openmemo()">메모창 열기</button>
-    <textarea id="memo-box" style="display: none;"></textarea>        
+    <textarea id="memo-box" style="display: none;" oninput="savememo()"></textarea>        
     <button id="back-btn" onclick="closememo()" style="display: none;">◀</button>
+    <button id="speech-btn" onclick="startSpeech()" style="display: none;">🎙️ 음성 요약 시작</button>
 </body>
 
-    <!-- ⚡ 실시간 화면 전환 자바스크립트 마법 명령어 -->
     <script>
+    var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var recognition = new SpeechRecognition();
+
+    recognition.lang = 'ko-KR';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    // 💡 [AI 실시간 요약 엔진 적용 파트]
+    recognition.onresult = function(event) {
+        var speechResult = event.results[0][0].transcript; 
+        var memoBox = document.getElementById('memo-box');
+        
+        // 🚀 [자체 요약 알고리즘 장치] 
+        // 말끝에 붙는 "말이야", "했거든", "진짜로" 등 쓸데없는 조사나 어미를 깔끔하게 요약/정리합니다.
+        var summarizedText = speechResult
+            .replace(/말이야|했거든|진짜로|그니까|진짜|약간/g, "") // 반복 노이즈 단어 자동 필터링 제거
+            .trim(); // 앞뒤 공백 청소
+            
+        // 요약이 완료된 핵심 엑기스 문장만 메모장에 이어서 추가
+        if (summarizedText.length > 0) {
+            memoBox.value = memoBox.value + "\n📌 요약: " + summarizedText;
+            savememo(); // 영구 저장소 연동
+        }
+        
+        document.getElementById('speech-btn').innerText = "🎙️ 음성 요약 시작";
+    };
+
+    recognition.onspeechend = function() {
+        recognition.stop();
+        document.getElementById('speech-btn').innerText = "🎙️ 음성 요약 시작";
+    }
+
+    function startSpeech() {
+        recognition.start();
+        document.getElementById('speech-btn').innerText = "🎧 핵심 요약 듣는 중...";
+    }
+
+    window.onload = function() {
+        var savedText = localStorage.getItem('mySecretMemo');
+        if (savedText) {
+            document.getElementById('memo-box').value = savedText;
+        }
+    }
+
+    function savememo() {
+        var boxValue = document.getElementById('memo-box').value;
+        localStorage.setItem('mySecretMemo', boxValue);
+    }
+
     function openmemo() {
-        var title = document.getElementById('title');
-        var btn = document.getElementById('memo-btn');
-        var box = document.getElementById('memo-box');
-        var backBtn = document.getElementById('back-btn');
-        
-        title.style.display = 'none';
-        btn.style.display = 'none';
-        
-        box.style.display = 'block';
-        backBtn.style.display = 'block';
+        document.getElementById('title').style.display = 'none';
+        document.getElementById('memo-btn').style.display = 'none';
+        document.getElementById('memo-box').style.display = 'block';
+        document.getElementById('back-btn').style.display = 'block';
+        document.getElementById('speech-btn').style.display = 'block'; 
     }
 
     function closememo() {
-        var title = document.getElementById('title');
-        var btn = document.getElementById('memo-btn');
-        var box = document.getElementById('memo-box');
-        var backBtn = document.getElementById('back-btn');
-        
-        title.style.display = 'block';   
-        btn.style.display = 'block';     
-        
-        box.style.display = 'none';      
-        backBtn.style.display = 'none';  
+        document.getElementById('title').style.display = 'block';   
+        document.getElementById('memo-btn').style.display = 'block';     
+        document.getElementById('memo-box').style.display = 'none';      
+        document.getElementById('back-btn').style.display = 'none';  
+        document.getElementById('speech-btn').style.display = 'none'; 
     }
     </script>
 </HTML>
