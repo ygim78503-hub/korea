@@ -139,6 +139,42 @@
             box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
         }
+        /* 🎵 구글 검색 스타일의 말할 때 춤추는 점 4개 컨테이너 */
+.google-dots-container {
+    display: none; /* 평소에는 숨김 */
+    gap: 4px;
+    justify-content: center;
+    align-items: center;
+    height: 30px;
+    width: 50px;
+    margin-top: 5px;
+}
+
+/* 활성화되었을 때 점들을 보여줌 */
+.google-dots-container.active {
+    display: flex;
+}
+
+/* 동글동글한 점 공통 스타일 */
+.google-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    animation: google-bounce 1s infinite ease-in-out;
+}
+
+/* 구글 시그니처 4색 컬러 및 춤추는 박자 엇갈리게 설정 */
+.google-dot:nth-child(1) { background-color: #4285f4; animation-delay: 0.0s; }
+.google-dot:nth-child(2) { background-color: #ea4335; animation-delay: 0.15s; }
+.google-dot:nth-child(3) { background-color: #fbbc05; animation-delay: 0.3s; }
+.google-dot:nth-child(4) { background-color: #34a853; animation-delay: 0.45s; }
+
+/* 위아래로 부드럽게 통통 튀는 구글 애니메이션 */
+@keyframes google-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
     </style>
 </HEAD>
 <BODY>
@@ -155,6 +191,14 @@
             <button id="back-btn" onclick="closememo()">◀</button>
             <button id="speech-btn" onclick="startSpeech()">🎙️</button>
             <button id="speak-btn" onclick="toggleAudioSwitch()">🔊 켜짐</button>
+            <!-- 🎵 구글 스타일의 통통 튀는 점 4개 구조 배치 -->
+<div id="google-dots" class="google-dots-container">
+    <div class="google-dot"></div>
+    <div class="google-dot"></div>
+    <div class="google-dot"></div>
+    <div class="google-dot"></div>
+</div>
+
         </div>
         <div class="right-content">
             <textarea id="memo-box" oninput="savememo()"></textarea>
@@ -208,6 +252,8 @@
             isListening = false;
             document.getElementById('speech-btn').innerText = "🎙️";
             document.getElementById('speech-btn').style.backgroundColor = "#0a192f";
+            document.getElementById('google-dots').classList.remove('active');
+
         };
 
         function startSpeech() {
@@ -218,6 +264,7 @@
                     window.speechSynthesis.cancel();
                     recognition.start();
                     isListening = true;
+                    document.getElementById('google-dots').classList.add('active');
                     document.getElementById('speech-btn').innerText = "🎧";
                     document.getElementById('speech-btn').style.backgroundColor = "#ea4335";
                 } catch(e) {
@@ -267,6 +314,8 @@
             document.getElementById('workspace-view').style.display = 'none';
             document.getElementById('main-view').style.display = 'flex';
             try { recognition.stop(); } catch(e) {}
+            document.getElementById('google-dots').classList.remove('active');
+
         }
     </script>
 </BODY>
