@@ -131,22 +131,17 @@
             display: flex;
         }
 
-        /* 동글동글한 점 공통 스타일 및 통통 튀는 구글 애니메이션 */
+        /* 동글동글한 점 설정 */
         .google-dot {
             width: 6px;
             height: 6px;
             border-radius: 50%;
-            animation: google-bounce 1s infinite ease-in-out;
+            transition: transform 0.05s ease-out;
         }
-        .google-dot:nth-child(1) { background-color: #4285f4; animation-delay: 0.0s; }
-        .google-dot:nth-child(2) { background-color: #ea4335; animation-delay: 0.15s; }
-        .google-dot:nth-child(3) { background-color: #fbbc05; animation-delay: 0.3s; }
-        .google-dot:nth-child(4) { background-color: #34a853; animation-delay: 0.45s; }
-
-        @keyframes google-bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-12px); }
-        }
+        .google-dot:nth-child(1) { background-color: #4285f4; }
+        .google-dot:nth-child(2) { background-color: #ea4335; }
+        .google-dot:nth-child(3) { background-color: #fbbc05; }
+        .google-dot:nth-child(4) { background-color: #34a853; }
                 /* 👉 [메모장 구역] */
         .right-content {
             margin-left: 80px;
@@ -196,8 +191,7 @@
             <textarea id="memo-box" oninput="savememo()"></textarea>
         </div>
     </div>
-
-    <script>
+        <script>
         var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         var recognition = new SpeechRecognition();
         recognition.lang = 'ko-KR';
@@ -207,8 +201,16 @@
         var isListening = false;
         var isAudioOn = true;
 
+        // 🎙️ 오디오 분석 장치 전용 보관소
+        var audioContext;
+        var analyser;
+        var micStream;
+        
+        // 📊 공이 따로따로 부드럽게 요동치도록 이전 위치를 기억하는 공간
+        var lastHeights = new Array(0, 0, 0, 0); 
+
         recognition.onresult = function(event) {
-            // 🎯 원래 가지고 계셨던 완벽한 정석 배열 방 번호 문법으로 완전 복구!
+            // 🎯 [정석 복구] 방 번호 문법을 철저하게 사수하여 replace 에러를 완벽 소멸시켰습니다!
             var speechResult = event.results[0][0].transcript;
             var memoBox = document.getElementById('memo-box');
             var summarizedText = speechResult.replace(/말이야|했거든|진짜로|그니까|진짜|약간/g, "").trim();
@@ -240,6 +242,7 @@
             document.getElementById('speech-btn').innerText = "🎙️";
             document.getElementById('speech-btn').style.backgroundColor = "#0a192f";
             document.getElementById('google-dots').classList.remove('active');
+            stopMicAnalysis();
         };
 
         function startSpeech() {
@@ -253,10 +256,65 @@
                     document.getElementById('speech-btn').innerText = "🎧";
                     document.getElementById('speech-btn').style.backgroundColor = "#ea4335";
                     document.getElementById('google-dots').classList.add('active');
+                    
+                    startMicAnalysis();
                 } catch(e) {
                     recognition.stop();
                 }
             }
+        }
+
+        // 📊 저음, 중음, 고음별로 주파수를 넓게 찢어 앙증맞은 엇박자 파동을 만드는 가동 엔진
+        function startMicAnalysis() {
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+                micStream = stream;
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                var source = audioContext.createMediaStreamSource(stream);
+                source.connect(analyser);
+                
+                analyser.fftSize = 64; 
+                analyser.smoothingTimeConstant = 0.8; 
+
+                var bufferLength = analyser.frequencyBinCount;
+                var dataArray = new Uint8Array(bufferLength);
+                var dots = document.querySelectorAll('.google-dot');
+
+                function drawVolume() {
+                    if (!isListening) return;
+                    analyser.getByteFrequencyData(dataArray);
+
+                    // 🎯 [완전 방어] 한 몸처럼 움직이지 않도록 저음(1)부터 고음(12)까지 번호를 멀리 찢음
+                    var targetIndices = new Array(1, 4, 8, 12); 
+
+                    dots.forEach(function(dot, index) {
+                        var rawValue = dataArray[targetIndices[index]];
+                        
+                        // 분모를 크게 주어 수치가 커져도 최대 2~3px 내외로만 정돈되도록 압축 연산
+                        var targetHeight = (rawValue > 35) ? (rawValue / 45.0) : 0;
+                        if (targetHeight > 4) targetHeight = 3.5; // 최대 높이 차단선 설치
+                        
+                        // 자연스러운 파동 효과 구현
+                        var smoothHeight = lastHeights[index] + (targetHeight - lastHeights[index]) * 0.25;
+                        lastHeights[index] = smoothHeight;
+
+                        // 최종 미니멀한 출렁임 반영 (말 안 하면 정확히 0px 일직선 제자리)
+                        dot.style.transform = `translateY(-${smoothHeight}px)`;
+                    });
+
+                    requestAnimationFrame(drawVolume);
+                }
+                drawVolume();
+            }).catch(function(err) {
+                console.log("마이크 접근 실패:", err);
+            });
+        }
+
+        function stopMicAnalysis() {
+            if (micStream) { micStream.getTracks().forEach(track => track.stop()); }
+            if (audioContext) { audioContext.close(); }
+            lastHeights = new Array(0, 0, 0, 0);
+            document.querySelectorAll('.google-dot').forEach(dot => dot.style.transform = 'translateY(0)');
         }
 
         function toggleAudioSwitch() {
@@ -279,9 +337,7 @@
 
         window.onload = function() {
             var savedText = localStorage.getItem('mySecretMemo');
-            if (savedText) {
-                document.getElementById('memo-box').value = savedText;
-            }
+            if (savedText) { document.getElementById('memo-box').value = savedText; }
         }
 
         function savememo() {
@@ -300,8 +356,10 @@
             document.getElementById('main-view').style.display = 'flex';
             try { recognition.stop(); } catch(e) {}
             document.getElementById('google-dots').classList.remove('active');
+            stopMicAnalysis();
         }
     </script>
 </BODY>
 </HTML>
+
 
